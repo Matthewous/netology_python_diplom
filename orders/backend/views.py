@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import UserRegistrationForm
+from .models import Product, Category
 
 # Create your views here.
   
@@ -27,3 +28,11 @@ def register(request):
     else:
         user_form = UserRegistrationForm()
     return render(request, 'backend/register.html', {'user_form': user_form})
+
+def all_products(request):
+    products_list = Product.objects.all()
+    return render(request, 'backend/products_list.html', {'products_list': products_list})
+
+def all_categories(request):
+    categories_list = Category.objects.all()
+    return render(request, 'backend/categories_list.html', {'categories_list': categories_list})

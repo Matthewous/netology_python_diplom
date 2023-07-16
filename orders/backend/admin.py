@@ -7,5 +7,4 @@ admin.site.register(Profile)
 admin.site.register(Shop)
 admin.site.register(Category)
 admin.site.register(Product)
-
-# admin.site.register()
+admin.site.register(ProductInfo)

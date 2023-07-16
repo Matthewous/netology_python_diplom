@@ -21,6 +21,8 @@ from backend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='home'),
+    path('products', views.all_products, name='products_list'),
+    path('categories', views.all_categories, name='categories'),
     path('register', views.register, name='register'),
     path('login', views.login, name='login'),
 ]
