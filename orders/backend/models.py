@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -18,9 +19,9 @@ class Profile(models.Model):
 class Shop(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название')
     url = models.URLField(verbose_name='Ссылка', null=True, blank=True)
-    user = models.OneToOneField(Profile, verbose_name='Пользователь',
+    user = models.ForeignKey(User, verbose_name='Менеджер',
                                 blank=True, null=True,
-                                on_delete=models.CASCADE)
+                                on_delete=models.SET_NULL)
     state = models.BooleanField(verbose_name='статус получения заказов', default=True)
 
     # filename
@@ -36,7 +37,7 @@ class Shop(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=256,verbose_name='Название')
     shops = models.ManyToManyField(Shop, verbose_name='Магазины', related_name='categories', blank=True)
-    
+
     
     class Meta:
         verbose_name = 'Категория'
