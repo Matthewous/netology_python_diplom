@@ -1,22 +1,68 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% block title %}<h1>Продукты</h1>{% endblock %}
-    <br/>
 
-    {% for product in products_list %}
-       
-    <div class="card">
-        <div class="card-header">
-            {{ product.name }}
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Категория: {{ product.category }}</h5>
-          <p class="card-text"></p>
-          <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Выбрать</a>
-        </div>
-    </div>
+<head>
+    <title>Список продуктов</title>
+</head>
+<body>
+    <h1>Список продуктов</h1>
     <br/>
-    {% endfor %}
-    
+    <h2>Фильтры</h2>
+
+    <form method="GET" action="" style="display: flex; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center;">
+            <label for="name" style="margin-right: 5px;">Название:</label>
+            <input type="text" id="name" name="name" value="{{ request.GET.name }}">
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="category" style="margin-right: 5px;">Категория:</label>
+            <input type="text" id="category" name="category" value="{{ request.GET.category }}">
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="model" style="margin-right: 5px;">Модель:</label>
+            <input type="text" id="model" name="model" value="{{ request.GET.model }}">
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="min_price" style="margin-right: 5px;">Мин цена:</label>
+            <input type="text" id="min_price" name="min_price" value="{{ request.GET.min_price }}">
+        </div>
+        <div style="display: flex; align-items: center;">
+            <label for="max_price" style="margin-right: 5px;">Макс цена:</label>
+            <input type="text" id="max_price" name="max_price" value="{{ request.GET.max_price }}">
+        </div>
+        
+        <button type="submit">Применить фильтр</button>
+    </form>
+    <br/>
+    <h2>Продукты</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Категория</th>
+                <th>Модель</th>
+                <th>Мин цена</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>
+                    {% for product_info in product.product_infos.all %}
+                    {{ product_info.model }}
+                    {% endfor %}
+                </td>
+                <td>{{ product.min_price }}</td>
+                <td>
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Выбрать</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
 {% endblock %}
