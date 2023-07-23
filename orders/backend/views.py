@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
 from .forms import UserRegistrationForm
-from .models import Product, Category
+from .models import Product, Category, ProductInfo
 
 # Create your views here.
   
@@ -15,3 +15,27 @@ def all_products(request):
 def all_categories(request):
     categories_list = Category.objects.all()
     return render(request, 'backend/categories_list.html', {'categories_list': categories_list})
+
+# def show_product(request, product_id):
+#     product = Product.objects.get(pk=product_id)
+#     info = ProductInfo.objects.get(pk=product_id)
+#     return render(request, 'backend/product.html', {'product': product,'info':info})
+    
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    product_infos = ProductInfo.objects.filter(product=product)
+
+    context = {
+        'product': product,
+        'product_infos': product_infos,
+    }
+
+    return render(request, 'backend/product_detail.html', context)
+
+def add_to_cart(request, product_info_id):
+    product_info = get_object_or_404(ProductInfo, pk=product_info_id)
+    # Реализуйте здесь логику добавления товара в корзину
+    # ...
+
+    # Перенаправление пользователя на страницу продукта после добавления в корзину
+    return redirect('backend/product_detail', product_id=product_info.product.id)

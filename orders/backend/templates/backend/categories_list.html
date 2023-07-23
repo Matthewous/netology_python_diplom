@@ -5,15 +5,18 @@
     <br/>
     
     {% for category in categories_list %}
-       
-        <strong>
+
+    <div class="card">
+        <div class="card-header">
             {{ category.name }}
-        </strong>
-        
-        <li>Проукты:<br/>
-            <li>{{ category }}</li>
-        </ul>
-        <br/>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title"></h5>
+          <p class="card-text"></p>
+          <a href="#" class="btn btn-secondary">Выбрать</a>
+        </div>
+    </div>
+    <br/>
     {% endfor %}
     
 {% endblock %}
