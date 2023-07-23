@@ -91,5 +91,9 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=[('editing', 'Редактирование'), ('confirmed', 'Оформлен')], default='editing')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.user.username}'s order for {self.product_name}"
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = "Заказы"
+
+    # def __str__(self):
+    #     return f"{self.user.username}'s order for {self.product_name}"
