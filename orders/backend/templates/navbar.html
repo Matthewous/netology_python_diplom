@@ -10,15 +10,18 @@
             <a class="nav-link active" aria-current="page" href="#">Home</a>
           </li> -->
           <li class="nav-item">
-            <a class="nav-link" href="products">Продукты</a>
+            <a class="nav-link" href="{% url 'products_list' %}">Продукты</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="categories">Категории</a>
+            <a class="nav-link" href="{% url 'categories' %}">Категории</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="shops">Магазины</a>
+            <a class="nav-link" href="{% url 'shops_list' %}">Магазины</a>
           </li>
           {% if user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'orders' %}">Заказы</a>
+            </li>
             <li class="nav-item">
             <a class="nav-link" href="{% url 'logout' %}">Выход</a>
             </li>
