@@ -25,8 +25,10 @@ urlpatterns = [
     path('members/', include('members.urls')),
     path('products/', views.products_list, name='products_list'),
     path('categories', views.all_categories, name='categories'),
-    path('shops', views.all_shops, name='shops_list'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('product_detail/<int:product_info_id>/add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('orders/', views.orders, name='orders'),
+    path('cart/', views.cart, name='cart'),
+    path('order_detail/<int:order_id>/', views.order_detail, name='order_detail'),
+
 ]

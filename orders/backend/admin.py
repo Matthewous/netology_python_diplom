@@ -3,11 +3,7 @@ from .models import *
 
 # Register your models here.
 
-# admin.site.register(Profile)
-# admin.site.register(Shop)
 admin.site.register(Category)
-# admin.site.register(Product)
-admin.site.register(ProductInfo)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -38,3 +34,7 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('order','product_name','quantity','price','shop')
     # ordering = ('created_at',)
     # search_fields = ('product_name')
+
+@admin.register(ProductInfo)
+class ProductInfoAdmin(admin.ModelAdmin):
+    list_display = ('external_id','product','quantity','price','shop','price_rrc')

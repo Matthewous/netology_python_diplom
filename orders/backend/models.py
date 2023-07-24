@@ -65,7 +65,6 @@ class Product(models.Model):
         return self.name
     
 class ProductInfo(models.Model):
-    # model = models.CharField(max_length=80, verbose_name='Модель', blank=True)
     external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
     product = models.ForeignKey(Product, verbose_name='Продукт', related_name='product_infos', blank=True,
                                 on_delete=models.CASCADE)
@@ -82,22 +81,6 @@ class ProductInfo(models.Model):
             models.UniqueConstraint(fields=['product', 'shop', 'external_id'], name='unique_product_info'),
         ]
     
-# class Order(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     product_name = models.CharField(max_length=100)
-#     quantity = models.IntegerField()
-#     price = models.DecimalField(max_digits=10, decimal_places=2)
-#     shop = models.CharField(max_length=100)
-#     status = models.CharField(max_length=20, choices=[('editing', 'Редактирование'), ('confirmed', 'Оформлен')], default='editing')
-#     created_at = models.DateTimeField(auto_now_add=True)
-
-#     class Meta:
-#         verbose_name = 'Заказ'
-#         verbose_name_plural = "Заказы"
-
-    # def __str__(self):
-    #     return f"{self.user.username}'s order for {self.product_name}"
-
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('editing', 'Редактирование'), ('confirmed', 'Оформлен')], default='editing')

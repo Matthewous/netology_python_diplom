@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Детали заказа</h1>
+    <p>Статус заказа: {{ order.status }}</p>
+    <p>Адресс доставки: {{ order.delivery_address }}</p>
+    <p>Ожидаемая дата доставки: {{ order.delivery_date }}</p>
+    <p>Дата оформления: {{ order.order_date }}</p>
+    <h3>Позиции:</h3>
+    <ul>
+    {% for item in order_items %}
+        <li>{{ item.product_name }} - Кол-во: {{ item.quantity }} - Цена: {{ item.price }} </li>
+    {% endfor %}
+    </ul>
+    <p>Сумма заказа: {{ total_price }}</p>
+
+{% endblock %}

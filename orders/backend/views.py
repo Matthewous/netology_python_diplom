@@ -11,36 +11,12 @@ from django.http import HttpResponseRedirect
 def index(request):
     return render(request, 'backend/index.html')
 
-# def all_products(request):
-#     products_list = Product.objects.all()
-#     return render(request, 'backend/products_list.html', {'products_list': products_list})
-
-# def products_list(request):
-#     products = Product.objects.all()
-
-#     name = request.GET.get('name')
-#     model = request.GET.get('model')
-#     price = request.GET.get('price')
-
-#     if name:
-#         products = products.filter(name__icontains=name)    
-#     if model:
-#         products = products.filter(product_infos__model__icontains=model)
-#     if price:
-#         products = products.filter(product_infos__price=price)
-
-#     context = {
-#         'products': products
-#     }
-#     return render(request, 'backend/products_list.html', context)
-
 def products_list(request):
     products = Product.objects.all()
 
     # Получаем значения фильтров из GET-параметров
     name = request.GET.get('name')
     category = request.GET.get('category')
-    model = request.GET.get('model')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
 
@@ -49,8 +25,6 @@ def products_list(request):
         products = products.filter(name__icontains=name)
     if category:
         products = products.filter(category__name=category)
-    if model:
-        products = products.filter(product_infos__model__icontains=model)
     if min_price:
         products = products.filter(product_infos__price__gte=min_price)
     if max_price:
@@ -81,22 +55,6 @@ def product_detail(request, product_id):
     }
     return render(request, 'backend/product_detail.html', context)
 
-# def add_to_cart(request, product_info_id):
-#     if request.method == 'POST':
-#         product_info = ProductInfo.objects.get(id=product_info_id)
-#         quantity = request.POST.get('quantity')
-        
-#         order = Order.objects.get_or_create(
-#             user=request.user, 
-#             product_name=product_info.product,
-#             quantity=quantity, 
-#             price=product_info.price, 
-#             shop=product_info.shop,
-#             status='editing',
-#         )
-
-#         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
 def add_to_cart(request, product_info_id):
     if request.method == 'POST':
         product_info = get_object_or_404(ProductInfo, id=product_info_id)
@@ -112,5 +70,49 @@ def add_to_cart(request, product_info_id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     
 def orders(request):
-    orders = Order.objects.filter(user=request.user)
-    return render(request, 'backend/orders.html', {'orders': orders})
+    user = request.user
+    orders = Order.objects.filter(user=user)
+    context = {
+        'orders': orders
+    }
+    return render(request, 'backend/orders.html', context)
+
+def cart(request):
+    user = request.user
+    order = Order.objects.filter(user=user, status='editing').first()
+    
+    if order:
+        order_items = order.orderitem_set.all()
+        total_price = sum(item.quantity * item.price for item in order_items)
+    else:
+        order_items = {}
+        total_price = 0
+    
+    if request.method == 'POST':
+        delivery_address = request.POST.get('delivery_address')
+        delivery_date = request.POST.get('delivery_date')
+
+        order.delivery_address = delivery_address
+        order.delivery_date = delivery_date
+        order.status = 'confirmed'
+        order.save()
+
+        return redirect('orders')
+
+    context = {
+        'order': order,
+        'order_items': order_items,
+        'total_price': total_price
+    }
+    return render(request, 'backend/cart.html', context)
+
+def order_detail(request, order_id):
+    order = Order.objects.get(id=order_id)
+    order_items = order.orderitem_set.all()
+    total_price = sum(item.quantity * item.price for item in order_items)
+    context = {
+        'order': order,
+        'order_items': order_items,
+        'total_price': total_price
+    }
+    return render(request, 'backend/order_detail.html', context)
