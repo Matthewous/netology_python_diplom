@@ -81,19 +81,33 @@ def product_detail(request, product_id):
     }
     return render(request, 'backend/product_detail.html', context)
 
+# def add_to_cart(request, product_info_id):
+#     if request.method == 'POST':
+#         product_info = ProductInfo.objects.get(id=product_info_id)
+#         quantity = request.POST.get('quantity')
+        
+#         order = Order.objects.get_or_create(
+#             user=request.user, 
+#             product_name=product_info.product,
+#             quantity=quantity, 
+#             price=product_info.price, 
+#             shop=product_info.shop,
+#             status='editing',
+#         )
+
+#         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def add_to_cart(request, product_info_id):
     if request.method == 'POST':
-        product_info = ProductInfo.objects.get(id=product_info_id)
+        product_info = get_object_or_404(ProductInfo, id=product_info_id)
         quantity = request.POST.get('quantity')
         
-        order = Order.objects.get_or_create(
-            user=request.user, 
-            product_name=product_info.product,
-            quantity=quantity, 
-            price=product_info.price, 
-            shop=product_info.shop,
-            status='editing',
-        )
+        try:
+            order = Order.objects.get(user=request.user, status='editing')
+            order.add_product(product_info, quantity)
+        except Order.DoesNotExist:
+            order = Order.objects.create(user=request.user, status='editing')
+            order.add_product(product_info, quantity)
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     
