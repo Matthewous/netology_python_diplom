@@ -65,7 +65,7 @@ class Product(models.Model):
         return self.name
     
 class ProductInfo(models.Model):
-    model = models.CharField(max_length=80, verbose_name='Модель', blank=True)
+    # model = models.CharField(max_length=80, verbose_name='Модель', blank=True)
     external_id = models.PositiveIntegerField(verbose_name='Внешний ИД')
     product = models.ForeignKey(Product, verbose_name='Продукт', related_name='product_infos', blank=True,
                                 on_delete=models.CASCADE)
@@ -102,6 +102,9 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=[('editing', 'Редактирование'), ('confirmed', 'Оформлен')], default='editing')
     created_at = models.DateTimeField(auto_now_add=True)
+    delivery_address = models.CharField(max_length=100)
+    delivery_date = models.DateField(null=True, blank=True)
+    order_date = models.DateTimeField(auto_now_add=True)
 
     def add_product(self, product_info, quantity):
         OrderItem.objects.create(
@@ -111,6 +114,10 @@ class Order(models.Model):
             price=product_info.price,
             shop=product_info.shop
         )
+    
+    class Meta:
+        verbose_name = 'Заказ'
+        verbose_name_plural = "Заказы"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

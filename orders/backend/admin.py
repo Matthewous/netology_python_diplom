@@ -29,6 +29,12 @@ class ProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('user','status','created_at')
+    list_display = ('user','status','created_at','delivery_address','delivery_date','order_date')
     ordering = ('created_at',)
     search_fields = ('user', 'status')
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order','product_name','quantity','price','shop')
+    # ordering = ('created_at',)
+    # search_fields = ('product_name')
