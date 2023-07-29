@@ -139,7 +139,11 @@ def cart(request):
         }
 
         # Добавляем детали заказа
-        elements.append(Paragraph(f'ID заказа: {order.id}', styles['Heading1']))
+        elements.append(Paragraph('Ваш заказ:', styles['Heading1']))
+        elements.append(Paragraph('', styles['Heading1']))
+        elements.append(Paragraph(f'ID заказа: {order.id}', styles['Heading2']))
+        elements.append(Paragraph(f'ID получателя: {user.id}', styles['Heading2']))
+        elements.append(Paragraph('', styles['Heading1']))        
         elements.append(Paragraph(f'Получатель: {user.first_name} {user.last_name}', styles['Heading2']))
         elements.append(Paragraph(f'Адрес доставки: {order.delivery_address}', styles['Heading2']))
         elements.append(Paragraph(f'Ожидаемая дата доставки: {order.delivery_date}', styles['Heading2']))
