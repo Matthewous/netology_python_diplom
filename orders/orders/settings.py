@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-from variables import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -127,9 +126,13 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '587'
-EMAIL_HOST_USER = my_email
-EMAIL_HOST_PASSWORD = my_email_password
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = 'Django app'
+# EMAIL_HOST_USER =  os.environ.get('EMAIL_LOGIN')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+EMAIL_HOST_USER = 'moguchev.mr@gmail.com'
+EMAIL_HOST_PASSWORD = 'tqoarelabmbfzytf'
 EMAIL_USE_TLS = True
 # EMAIL_USE_SSL = False

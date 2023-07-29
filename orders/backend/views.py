@@ -1,10 +1,25 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
+
+from orders.settings import EMAIL_HOST_USER
 from .forms import UserRegistrationForm
 from .models import Order, Product, Category, ProductInfo, Shop
 from django.core.mail import send_mail
 from django.db.models import Q, Min
 from django.http import HttpResponseRedirect
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
+from reportlab.lib import colors
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 # Create your views here.
   
@@ -97,6 +112,74 @@ def cart(request):
         order.status = 'confirmed'
         order.save()
 
+        # отправка email
+
+        # создание PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="order_confirmation.pdf"'
+        
+        pdfmetrics.registerFont(TTFont('ArialUnicode', 'backend/fonts/ArialUnicode.ttf'))
+
+        doc = SimpleDocTemplate(response, pagesize=letter)
+        elements = []
+
+        styles = {
+            'Heading1': ParagraphStyle(
+                'Heading1',
+                fontSize=16,
+                fontName='ArialUnicode',
+                spaceAfter=12
+            ),
+            'Heading2': ParagraphStyle(
+                'Heading2',
+                fontSize=14,
+                fontName='ArialUnicode',
+                spaceAfter=6
+            ),
+        }
+
+        # Добавляем детали заказа
+        elements.append(Paragraph(f'ID заказа: {order.id}', styles['Heading1']))
+        elements.append(Paragraph(f'Получатель: {user.first_name} {user.last_name}', styles['Heading2']))
+        elements.append(Paragraph(f'Адрес доставки: {order.delivery_address}', styles['Heading2']))
+        elements.append(Paragraph(f'Ожидаемая дата доставки: {order.delivery_date}', styles['Heading2']))
+        elements.append(Paragraph(f'Общая сумма заказа: {total_price}', styles['Heading2']))
+        elements.append(Paragraph('', styles['Heading1']))
+        # Добавляем позиции по заказу
+        data = [['Наименование', 'Количество', 'Цена', 'Дистрибъютор']]
+        for item in order_items:
+            data.append([item.product_name, 
+                         item.quantity, 
+                         item.price, 
+                         item.shop])
+
+        table = Table(data)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'ArialUnicode'),
+            ('FONTSIZE', (0, 0), (-1, 0), 14),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('FONTNAME', (0, 1), (-1, -1), 'ArialUnicode'),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ]))
+
+        elements.append(table)
+        doc.build(elements)
+
+        # отправка email
+        email = EmailMessage(
+            subject='Ваш заказ оформлен',
+            body=f'Ваш заказ по адресу будет доставлен {delivery_date} по адресу {delivery_address}. Сумма заказа: {total_price}',
+            from_email=EMAIL_HOST_USER,
+            to=[user.email],
+        )
+        email.attach('order_confirmation.pdf', response.getvalue(), 'application/pdf')
+        email.send()
+
+
         return redirect('orders')
 
     context = {
@@ -116,3 +199,4 @@ def order_detail(request, order_id):
         'total_price': total_price
     }
     return render(request, 'backend/order_detail.html', context)
+
