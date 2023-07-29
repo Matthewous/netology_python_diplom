@@ -17,12 +17,6 @@ class ShopAdmin(admin.ModelAdmin):
     ordering = ('name',)
     search_fields = ('name', 'user', 'state')
 
-@admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'email')
-    ordering = ('last_name',)
-    search_fields = ('last_name', 'first_name', 'email')
-
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('user','status','created_at','delivery_address','delivery_date','order_date')

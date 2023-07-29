@@ -1,23 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.core.mail import send_mail
 
 # Create your models here.
-
-class Profile(models.Model):
-    first_name = models.CharField(max_length=50,verbose_name='Имя')
-    last_name = models.CharField(max_length=50,verbose_name='Фамилия')
-    email = models.EmailField(verbose_name='E-mail')
-
-    class Meta:
-        verbose_name = 'Пользователь'
-        verbose_name_plural = 'Список пользователей'
-        ordering = ('-first_name',)
-
-    def __str__(self):
-        return self.first_name + ' ' + self.last_name
     
 class Shop(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название')
