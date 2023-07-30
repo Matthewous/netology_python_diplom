@@ -198,6 +198,14 @@ def delete_order_item(request, item_id):
     item.delete()
     return redirect('cart')
 
+def update_order_item(request, item_id):
+    item = get_object_or_404(OrderItem, id=item_id)
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        item.quantity = quantity
+        item.save()
+    return redirect('cart')
+
 def order_detail(request, order_id):
     order = Order.objects.get(id=order_id)
     order_items = order.orderitem_set.all()

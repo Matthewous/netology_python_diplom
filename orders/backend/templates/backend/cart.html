@@ -23,8 +23,16 @@
             <tbody>
                 {% for item in order_items %}
                 <tr>
+                    <!-- <td>{{ item.product_name }}</td> -->
                     <td>{{ item.product_name }}</td>
-                    <td>{{ item.quantity }}</td>
+                    <td>
+                        <form method="POST" action="{% url 'update_order_item' item.id %}">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}">
+                            <input type="submit" value="Изменить">
+                        </form>
+                    </td>
+                    <!-- <td>{{ item.quantity }}</td> -->
                     <td>{{ item.price }}</td>
                     <td>{{ item.shop }}</td>
                     <td>
