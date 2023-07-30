@@ -33,6 +33,11 @@ urlpatterns = [
     path('thank_you_page', views.thank_you_page, name='thank_you_page'),
     path('cart/delete/<int:item_id>/', views.delete_order_item, name='delete_order_item'),
     path('update_order_item/<int:item_id>/', views.update_order_item, name='update_order_item'),
+    
     path('register_shop/', views.register_shop, name='register_shop'),
     path('shop_catalog/', views.shop_catalog, name='shop_catalog'),
+    path('update_product_quantity/<int:product_id>/', views.update_product_quantity, name='update_product_quantity'),
+    path('update_product_price/<int:product_id>/', views.update_product_price, name='update_product_price'),
+    path('update_product_price_rrc/<int:product_id>/', views.update_product_price_rrc, name='update_product_price_rrc'),
+    # path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
 ]

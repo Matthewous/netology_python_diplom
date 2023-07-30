@@ -25,11 +25,29 @@
             <tr>
                 <td>{{ product.product.name }}</td>
                 <td>{{ product.product.category.name }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.price_rrc }}</td>
+                <td>
+                <form method="POST" action="{% url 'update_product_quantity' product.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ product.quantity }}">
+                    <input type="submit" value="Изменить">
+                </td>
+                <td> 
+                <form method="POST" action="{% url 'update_product_price' product.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="price" value="{{ product.price }}">
+                    <input type="submit" value="Изменить">
+                </td>
+                <td>
+                <form method="POST" action="{% url 'update_product_price_rrc' product.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="price_rrc" value="{{ product.price_rrc }}">
+                    <input type="submit" value="Изменить">
+                </td>
                 <!-- <td>
-                    <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Выбрать</a>
+                    <form method="POST" action="{% url 'delete_product' product.id %}">
+                        {% csrf_token %}
+                        <input type="submit" value="Удалить">
+                    </form>
                 </td> -->
             </tr>
             {% endfor %}

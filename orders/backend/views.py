@@ -257,3 +257,27 @@ def shop_catalog(request):
         'shop':shop
     }
     return render(request, 'backend/shop_catalog.html', context)
+
+def update_product_quantity(request, product_id):
+    product = get_object_or_404(ProductInfo, id=product_id)
+    if request.method == 'POST':
+        quantity = request.POST.get('quantity')
+        product.quantity = quantity
+        product.save()
+    return redirect('shop_catalog')
+
+def update_product_price(request, product_id):
+    product = get_object_or_404(ProductInfo, id=product_id)
+    if request.method == 'POST':
+        price = request.POST.get('price')
+        product.price = price
+        product.save()
+    return redirect('shop_catalog')
+
+def update_product_price_rrc(request, product_id):
+    product = get_object_or_404(ProductInfo, id=product_id)
+    if request.method == 'POST':
+        price_rrc = request.POST.get('price_rrc')
+        product.price = price_rrc
+        product.save()
+    return redirect('shop_catalog')
