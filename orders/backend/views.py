@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 from orders.settings import EMAIL_HOST_USER
 from .forms import UserRegistrationForm
+from .forms import ShopRegistrationForm
 from .models import Order, OrderItem, Product, Category, ProductInfo, Shop
 from django.core.mail import send_mail
 from django.db.models import Q, Min
@@ -20,6 +21,7 @@ from reportlab.lib import colors
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+from django.contrib import messages
 
 # Create your views here.
   
@@ -225,4 +227,18 @@ def thank_you_page(request):
     }
 
     return render(request, 'backend/thank_you_page.html', context)
+
+def register_shop(request):
+    if request.method == 'POST':
+        form = ShopRegistrationForm(request.POST)
+        if form.is_valid():
+            shop = form.save(commit=False)
+            shop.user = request.user
+            shop.save()
+            messages.success(request, 'Магазин зарегистрирован.')
+            return redirect('home')
+    else:
+        form = ShopRegistrationForm()
+
+    return render(request, 'backend/register_shop.html', {'form': form})
 

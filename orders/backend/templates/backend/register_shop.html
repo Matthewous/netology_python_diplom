@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Создайте свой магазин!</h1>
+<br/><br/>
+
+<form action="{% url 'register_shop' %}" method="POST">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+    
+    <input type="submit" value="Submit" class="btn btn-secondary">
+</form>
+
+<br/><br/>
+
+{% endblock %}
