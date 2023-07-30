@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <center>
+        <h1>Спасибо за ваш заказ</h1>
+        <p>Подтверждение заказа направлено на вашу почту: {{ user.email }}</p>
+        <a href="{% url 'orders' %}" class="btn btn-secondary">Перейти к истории заказов</a>
+    </center>
+
+{% endblock %}

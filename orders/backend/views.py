@@ -184,7 +184,7 @@ def cart(request):
         email.send()
 
 
-        return redirect('orders')
+        return redirect('thank_you_page')
 
     context = {
         'order': order,
@@ -203,4 +203,13 @@ def order_detail(request, order_id):
         'total_price': total_price
     }
     return render(request, 'backend/order_detail.html', context)
+
+def thank_you_page(request):
+    user = request.user
+
+    context = {
+        'user': user
+    }
+
+    return render(request, 'backend/thank_you_page.html', context)
 
