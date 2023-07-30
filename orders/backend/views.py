@@ -3,7 +3,7 @@ from django.http import HttpResponse
 
 from orders.settings import EMAIL_HOST_USER
 from .forms import UserRegistrationForm
-from .models import Order, Product, Category, ProductInfo, Shop
+from .models import Order, OrderItem, Product, Category, ProductInfo, Shop
 from django.core.mail import send_mail
 from django.db.models import Q, Min
 from django.http import HttpResponseRedirect
@@ -192,6 +192,11 @@ def cart(request):
         'total_price': total_price
     }
     return render(request, 'backend/cart.html', context)
+
+def delete_order_item(request, item_id):
+    item = OrderItem.objects.get(id=item_id)
+    item.delete()
+    return redirect('cart')
 
 def order_detail(request, order_id):
     order = Order.objects.get(id=order_id)
