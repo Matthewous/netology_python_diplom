@@ -232,11 +232,15 @@ def register_shop(request):
     if request.method == 'POST':
         form = ShopRegistrationForm(request.POST)
         if form.is_valid():
-            shop = form.save(commit=False)
-            shop.user = request.user
-            shop.save()
-            messages.success(request, 'Магазин зарегистрирован.')
-            return redirect('home')
+            user = request.user
+            if not Shop.objects.filter(user=user).exists():
+                shop = form.save(commit=False)
+                shop.user = request.user
+                shop.save()
+                messages.success(request, 'Магазин зарегистрирован.')
+                return redirect('home')
+            else:
+                form.add_error(None, "Вы уже являетесь менеджером другого магазина")
     else:
         form = ShopRegistrationForm()
 
