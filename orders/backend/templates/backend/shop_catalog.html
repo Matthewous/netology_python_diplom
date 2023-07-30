@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if shop %}
+<head>
+    <title>Список продуктов</title>
+</head>
+<body>
+    <h1>Магазин {{ shop.name }}</h1>
+    <br/>
+    <h2>Продукты</h2>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Категория</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>РРЦ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{ product.product.name }}</td>
+                <td>{{ product.product.category.name }}</td>
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.price_rrc }}</td>
+                <!-- <td>
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-secondary">Выбрать</a>
+                </td> -->
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+{% else %}
+<center>
+    <p>Вы не являетесь менеджером магазина. Зарегистрировать магазин?</p>
+    <a href="{% url 'register_shop' %}" class="btn btn-secondary">Зарегистрировать магазин</a>
+</center>
+{% endif %}
+{% endblock %}

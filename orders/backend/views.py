@@ -246,3 +246,14 @@ def register_shop(request):
 
     return render(request, 'backend/register_shop.html', {'form': form})
 
+def shop_catalog(request):
+    user = request.user
+    shop = Shop.objects.filter(user=user).first()
+    
+    products = ProductInfo.objects.filter(shop=shop).all()
+
+    context = {
+        'products':products,
+        'shop':shop
+    }
+    return render(request, 'backend/shop_catalog.html', context)
