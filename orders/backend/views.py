@@ -60,19 +60,12 @@ def products_list(request):
         products = products.filter(product_infos__price__lte=max_price)
 
     products = products.annotate(min_price=Min('product_infos__price'))
+    products = products.exclude(min_price=None)
 
     context = {
         'products': products
     }
     return render(request, 'backend/products_list.html', context)
-
-def all_categories(request):
-    categories_list = Category.objects.all()
-    return render(request, 'backend/categories_list.html', {'categories_list': categories_list})
-
-def all_shops(request):
-    shops_list = Shop.objects.all()
-    return render(request, 'backend/shops_list.html', {'shops_list': shops_list})
 
 def product_detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
@@ -307,22 +300,35 @@ def import_products(request):
         shop = Shop.objects.get(pk=shop_id)
         user = request.user
 
-        if shop.user == user: # Проверка соответствия id магазина с id пользователя
+        if shop.user == user: 
             products = data.get('products', [])
             ProductInfo.objects.filter(shop=shop).delete()
+
             for product_data in products:
-                product = Product.objects.create(
+                product, created = Product.objects.get_or_create(
                     name=product_data.get('name'),
                     category_id=product_data.get('category_id')
                 )
-                ProductInfo.objects.create(
-                    external_id=product_data.get('external_id'),
-                    product=product,
-                    shop=shop,
-                    quantity=product_data.get('quantity'),
-                    price=product_data.get('price'),
-                    price_rrc=product_data.get('price_rrc')
-                )
+
+                if created:
+                    # Обновляем характеристики продукта ProductInfo, если продукт уже существует
+                    product_info = ProductInfo.objects.get(product=product, shop=shop)
+                    product_info.external_id=product_data.get('external_id')
+                    product_info.quantity=product_data.get('quantity')
+                    product_info.price=product_data.get('price')
+                    product_info.price_rrc=product_data.get('price_rrc')
+                    product_info.save()
+
+                else:
+                    ProductInfo.objects.create(
+                        external_id=product_data.get('external_id'),
+                        product=product,
+                        shop=shop,
+                        quantity=product_data.get('quantity'),
+                        price=product_data.get('price'),
+                        price_rrc=product_data.get('price_rrc')
+                    )
+            
             messages.success(request, 'Продукты успешно импортированы')
         else:
             messages.error(request, 'Ошибка: Вы не можете импортировать продукты для этого магазина')
@@ -403,46 +409,3 @@ def export_orders(request, shop_id):
     wb.save(response)
 
     return response
-
-# def export_orders(request, shop_id):
-#     # Получаем объект магазина по его ID
-#     shop = Shop.objects.get(id=shop_id)
-    
-#     # Получаем все заказы, связанные с данным магазином
-#     orders = Order.objects.filter(orderitem__shop=shop).distinct()
-    
-#     # Создаем новый Excel-документ
-#     workbook = Workbook()
-#     sheet = workbook.active
-    
-#     # Заполняем заголовки столбцов
-#     sheet['A1'] = 'Номер заказа'
-#     sheet['B1'] = 'Адрес доставки'
-#     sheet['C1'] = 'Дата доставки'
-#     sheet['D1'] = 'Дата заказа'
-#     sheet['E1'] = 'Название товара'
-#     sheet['F1'] = 'Количество'
-#     sheet['G1'] = 'Цена'
-    
-#     # Заполняем данные по заказам и продуктам
-#     for row_num, order in enumerate(orders, start=2):
-#         sheet.cell(row=row_num, column=1, value=order.id)
-#         sheet.cell(row=row_num, column=2, value=order.delivery_address)
-#         sheet.cell(row=row_num, column=3, value=order.delivery_date)
-#         sheet.cell(row=row_num, column=4, value=order.order_date)
-        
-#         order_items = OrderItem.objects.filter(order=order, shop=shop)
-#         for item in order_items:
-#             sheet.cell(row=row_num, column=5, value=item.product_name)
-#             sheet.cell(row=row_num, column=6, value=item.quantity)
-#             sheet.cell(row=row_num, column=7, value=item.price)
-#             row_num += 1
-    
-#     # Настраиваем HTTP-response для скачивания файла
-#     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-#     response['Content-Disposition'] = 'attachment; filename=orders.xlsx'
-    
-#     # Сохраняем Excel-документ в HTTP-response
-#     workbook.save(response)
-    
-#     return response
