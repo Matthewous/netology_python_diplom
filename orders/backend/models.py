@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 # Create your models here.
     
@@ -74,13 +75,18 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
 
     def add_product(self, product_info, quantity):
-        OrderItem.objects.create(
-            order=self,
-            product_name=product_info.product,
-            quantity=quantity,
-            price=product_info.price,
-            shop=product_info.shop
-        )
+        try:
+            order_item = OrderItem.objects.get(order=self, product_name=product_info.product, price=product_info.price, shop=product_info.shop)
+            order_item.quantity += int(quantity)
+            order_item.save()
+        except ObjectDoesNotExist:
+            OrderItem.objects.create(
+                order=self,
+                product_name=product_info.product,
+                quantity=quantity,
+                price=product_info.price,
+                shop=product_info.shop
+            )
     
     class Meta:
         verbose_name = 'Заказ'
