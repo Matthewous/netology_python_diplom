@@ -32,6 +32,8 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from django.contrib.auth.models import User
+import openpyxl
+from openpyxl import Workbook
 
 # Create your views here.
   
@@ -360,3 +362,87 @@ def generate_pdf(order, order_items, shop):
 
     buffer.seek(0)
     return buffer.getvalue()
+
+def export_orders(request, shop_id):
+    shop = get_object_or_404(Shop, id=shop_id)
+    orders = Order.objects.filter(orderitem__shop=shop).distinct()
+
+    # Создаем новую рабочую книгу
+    wb = openpyxl.Workbook()
+    # Выбираем активный лист
+    ws = wb.active
+
+    # Заголовки столбцов
+    ws['A1'] = 'Номер заказа'
+    ws['B1'] = 'Дата создания'
+    ws['C1'] = 'Адрес доставки'
+    ws['D1'] = 'Дата доставки'
+    ws['E1'] = 'Статус'
+    ws['F1'] = 'Название товара'
+    ws['G1'] = 'Кол-во'
+    ws['H1'] = 'Цена'
+
+    row_num = 2  # Номер строки для данных
+
+    # Заполняем данные по заказам
+    for order in orders:
+        order_items = OrderItem.objects.filter(order=order, shop=shop)
+        for item in order_items:
+            ws.cell(row=row_num, column=1, value=order.id)
+            ws.cell(row=row_num, column=2, value=order.order_date.strftime('%Y-%m-%d %H:%M:%S'))
+            ws.cell(row=row_num, column=3, value=order.delivery_address)
+            ws.cell(row=row_num, column=4, value=order.delivery_date.strftime('%Y-%m-%d') if order.delivery_date else '')
+            ws.cell(row=row_num, column=5, value=order.get_status_display())
+            ws.cell(row=row_num, column=6, value=item.product_name)
+            ws.cell(row=row_num, column=7, value=item.quantity)
+            ws.cell(row=row_num, column=8, value=item.price)
+            row_num += 1
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename=orders_{shop.name}.xlsx'
+    wb.save(response)
+
+    return response
+
+# def export_orders(request, shop_id):
+#     # Получаем объект магазина по его ID
+#     shop = Shop.objects.get(id=shop_id)
+    
+#     # Получаем все заказы, связанные с данным магазином
+#     orders = Order.objects.filter(orderitem__shop=shop).distinct()
+    
+#     # Создаем новый Excel-документ
+#     workbook = Workbook()
+#     sheet = workbook.active
+    
+#     # Заполняем заголовки столбцов
+#     sheet['A1'] = 'Номер заказа'
+#     sheet['B1'] = 'Адрес доставки'
+#     sheet['C1'] = 'Дата доставки'
+#     sheet['D1'] = 'Дата заказа'
+#     sheet['E1'] = 'Название товара'
+#     sheet['F1'] = 'Количество'
+#     sheet['G1'] = 'Цена'
+    
+#     # Заполняем данные по заказам и продуктам
+#     for row_num, order in enumerate(orders, start=2):
+#         sheet.cell(row=row_num, column=1, value=order.id)
+#         sheet.cell(row=row_num, column=2, value=order.delivery_address)
+#         sheet.cell(row=row_num, column=3, value=order.delivery_date)
+#         sheet.cell(row=row_num, column=4, value=order.order_date)
+        
+#         order_items = OrderItem.objects.filter(order=order, shop=shop)
+#         for item in order_items:
+#             sheet.cell(row=row_num, column=5, value=item.product_name)
+#             sheet.cell(row=row_num, column=6, value=item.quantity)
+#             sheet.cell(row=row_num, column=7, value=item.price)
+#             row_num += 1
+    
+#     # Настраиваем HTTP-response для скачивания файла
+#     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+#     response['Content-Disposition'] = 'attachment; filename=orders.xlsx'
+    
+#     # Сохраняем Excel-документ в HTTP-response
+#     workbook.save(response)
+    
+#     return response

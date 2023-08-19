@@ -18,7 +18,13 @@
     <br/> 
     <h2>Импорт товаров</h2>        
     <a href="{% url 'import_products' %}">Импортировать товары</a>
-    <br/><br/>    
+    <br/><br/>
+    <h2>Выгрузка в Excel</h2>
+    <form method="post" action="{% url 'export_orders' shop.id %}">
+        {% csrf_token %}
+        <input type="submit" value="Выгрузить">
+    </form>
+    <br/><br/>
     <h2>Продукты</h2>
     <table width="100%">
         <thead>
