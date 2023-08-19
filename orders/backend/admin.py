@@ -13,9 +13,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'state')
-    ordering = ('name',)
-    search_fields = ('name', 'user', 'state')
+    list_display = ('id', 'name', 'user', 'state')
+    ordering = ('id',)
+    search_fields = ('id', 'name', 'user', 'state')
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):

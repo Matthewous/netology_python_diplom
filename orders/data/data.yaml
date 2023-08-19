@@ -1,0 +1,14 @@
+shop_id: 5
+products:
+  - name: Samsung Galaxy
+    category_id: 1
+    external_id: 12345
+    quantity: 10
+    price: 100000
+    price_rrc: 110000
+  - name: Honor
+    category_id: 1
+    external_id: 54321
+    quantity: 10
+    price: 90000
+    price_rrc: 80000

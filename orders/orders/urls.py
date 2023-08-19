@@ -38,4 +38,5 @@ urlpatterns = [
     path('shop_catalog/', views.shop_catalog, name='shop_catalog'),
     # path('update_product/<int:product_id>/', views.update_product, name='update_product'),
     path('shop_status/<int:shop_id>/', views.shop_status, name='shop_status'),
+    path('import/', views.import_products, name='import_products'),
 ]

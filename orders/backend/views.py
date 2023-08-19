@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.http import HttpResponse
+import yaml
 
 from orders.settings import EMAIL_HOST_USER
 from .forms import UserRegistrationForm
@@ -283,3 +284,77 @@ def shop_status(request, shop_id):
         return redirect('shop_catalog')
 
     return render(request, 'shop_catalog.html', {'shop': shop})
+
+# def import_products(request):
+
+#     if request.method == 'POST':
+#         yaml_file = request.FILES['yaml_file']
+#         try:
+#             data = yaml.safe_load(yaml_file)
+#         except yaml.YAMLError:
+#             messages.error(request, 'Ошибка чтения файла YAML')
+#             return redirect('import_products')
+
+#         shop_id = data.get('shop_id')
+#         shop = Shop.objects.get(pk=shop_id)
+#         products = data.get('products', [])
+
+#         # Очищаем все записи о продуктах конкретного магазина
+#         ProductInfo.objects.filter(shop=shop).delete()
+
+#         for product_data in products:
+#             product = Product.objects.create(
+#                 name=product_data.get('name'),
+#                 category_id=product_data.get('category_id')
+#             )
+
+#             ProductInfo.objects.create(
+#                 external_id=product_data.get('external_id'),
+#                 product=product,
+#                 shop=shop,
+#                 quantity=product_data.get('quantity'),
+#                 price=product_data.get('price'),
+#                 price_rrc=product_data.get('price_rrc')
+#             )
+
+#         messages.success(request, 'Продукты успешно импортированы')
+#         return redirect('import_products')
+
+#     return render(request, 'backend/import.html')
+
+def import_products(request):
+    if request.method == 'POST':
+        yaml_file = request.FILES['yaml_file']
+        try:
+            data = yaml.safe_load(yaml_file)
+        except yaml.YAMLError:
+            messages.error(request, 'Ошибка чтения файла YAML')
+            return redirect('import_products')
+
+        shop_id = data.get('shop_id')
+        shop = Shop.objects.get(pk=shop_id)
+        user = request.user
+
+        if shop.user == user: # Проверка соответствия id магазина с id пользователя
+            products = data.get('products', [])
+            ProductInfo.objects.filter(shop=shop).delete()
+            for product_data in products:
+                product = Product.objects.create(
+                    name=product_data.get('name'),
+                    category_id=product_data.get('category_id')
+                )
+                ProductInfo.objects.create(
+                    external_id=product_data.get('external_id'),
+                    product=product,
+                    shop=shop,
+                    quantity=product_data.get('quantity'),
+                    price=product_data.get('price'),
+                    price_rrc=product_data.get('price_rrc')
+                )
+            messages.success(request, 'Продукты успешно импортированы')
+        else:
+            messages.error(request, 'Ошибка: Вы не можете импортировать продукты для этого магазина')
+
+        return redirect('shop_catalog')
+
+    return render(request, 'backend/import.html')
