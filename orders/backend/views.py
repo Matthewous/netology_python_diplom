@@ -23,6 +23,15 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.template.loader import get_template
+from django.template import Context
+from django.conf import settings
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from django.contrib.auth.models import User
 
 # Create your views here.
   
@@ -186,6 +195,18 @@ def cart(request):
         email.attach('order_confirmation.pdf', response.getvalue(), 'application/pdf')
         email.send()
 
+        order_items = order.orderitem_set.all()
+        for item in order_items:
+            shop = item.shop
+            manager_emails = User.objects.filter(shop__name=shop).values_list('email', flat=True)
+            
+            pdf_data = generate_pdf(order, order_items, shop)
+            
+            email_subject = 'Заказ с сайте'
+            email_body = 'Здравствуйте,\n\nВаш заказ с сайта:'
+            email = EmailMessage(email_subject, email_body, settings.DEFAULT_FROM_EMAIL, manager_emails)
+            email.attach('order.pdf', pdf_data, 'application/pdf')
+            email.send()
 
         return redirect('thank_you_page')
 
@@ -307,3 +328,35 @@ def import_products(request):
         return redirect('shop_catalog')
 
     return render(request, 'backend/import.html')
+
+def generate_pdf(order, order_items, shop):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+
+    p.setFont("ArialUnicode", 14)
+    p.drawString(30, 750, f"ID заказа: {order.id}")
+    p.drawString(30, 725, f"Дата заказа: {order.delivery_date}")
+    p.drawString(30, 700, "Адрес доставки: {address}".format(address=order.delivery_address))
+    p.drawString(30, 675, f"Дата доставки: {order.delivery_date}")
+
+    p.setFont("ArialUnicode", 12)
+    p.drawString(30, 650, "Список товаров:")
+    p.setFont("ArialUnicode", 10)
+    
+    y = 625
+    order_summ = 0
+    for item in order_items:
+        if item.shop == shop:
+            text = "{name} - {quantity} шт. - {price} руб.".format(name=item.product_name, quantity=item.quantity, price=item.price)
+            p.drawString(30, y, text)
+            order_summ += item.price * item.quantity
+            y -= 25
+
+    y -= 25
+    p.drawString(30, y, f"Сумма заказа: {order_summ}")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return buffer.getvalue()
