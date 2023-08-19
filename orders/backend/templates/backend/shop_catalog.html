@@ -4,11 +4,18 @@
 
 {% if shop %}
 <head>
-    <title>Список продуктов</title>
+    <title>Управление магазином</title>
 </head>
 <body>
-    <h1>Магазин {{ shop.name }}</h1>
+    <h1>Магазин: {{ shop.name }}</h1>
     <br/>
+    <h2>Статус принятия заказов</h2>
+    <form method="post" action="{% url 'shop_status' shop.id %}">
+        {% csrf_token %}
+        <input type="checkbox" name="state" {% if shop.state %}checked{% endif %}>
+        <input type="submit" value="Установить">
+    </form>
+    <br/>    
     <h2>Продукты</h2>
     <table width="100%">
         <thead>
@@ -25,30 +32,9 @@
             <tr>
                 <td>{{ product.product.name }}</td>
                 <td>{{ product.product.category.name }}</td>
-                <td>
-                <form method="POST" action="{% url 'update_product_quantity' product.id %}">
-                    {% csrf_token %}
-                    <input type="number" name="quantity" value="{{ product.quantity }}">
-                    <input type="submit" value="Изменить">
-                </td>
-                <td> 
-                <form method="POST" action="{% url 'update_product_price' product.id %}">
-                    {% csrf_token %}
-                    <input type="number" name="price" value="{{ product.price }}">
-                    <input type="submit" value="Изменить">
-                </td>
-                <td>
-                <form method="POST" action="{% url 'update_product_price_rrc' product.id %}">
-                    {% csrf_token %}
-                    <input type="number" name="price_rrc" value="{{ product.price_rrc }}">
-                    <input type="submit" value="Изменить">
-                </td>
-                <!-- <td>
-                    <form method="POST" action="{% url 'delete_product' product.id %}">
-                        {% csrf_token %}
-                        <input type="submit" value="Удалить">
-                    </form>
-                </td> -->
+                <td>{{ product.quantity }}</td>
+                <td>{{ product.price }}</td>
+                <td>{{ product.price_rrc }}</td>
             </tr>
             {% endfor %}
         </tbody>

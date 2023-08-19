@@ -258,26 +258,28 @@ def shop_catalog(request):
     }
     return render(request, 'backend/shop_catalog.html', context)
 
-def update_product_quantity(request, product_id):
-    product = get_object_or_404(ProductInfo, id=product_id)
-    if request.method == 'POST':
-        quantity = request.POST.get('quantity')
-        product.quantity = quantity
-        product.save()
-    return redirect('shop_catalog')
+# def update_product(request, product_id):
+    
+#     product = get_object_or_404(ProductInfo, id=product_id)
+    
+#     if request.method == 'POST':
+#         quantity = request.POST.get('quantity')
+#         product.quantity = quantity
+#         price = request.POST.get('price')
+#         product.price = price
+#         price_rrc = request.POST.get('price_rrc')
+#         product.price = price_rrc
+#         product.save()
+    
+#     return redirect('shop_catalog')
 
-def update_product_price(request, product_id):
-    product = get_object_or_404(ProductInfo, id=product_id)
-    if request.method == 'POST':
-        price = request.POST.get('price')
-        product.price = price
-        product.save()
-    return redirect('shop_catalog')
+def shop_status(request, shop_id):
+    shop = get_object_or_404(Shop, id=shop_id)
 
-def update_product_price_rrc(request, product_id):
-    product = get_object_or_404(ProductInfo, id=product_id)
     if request.method == 'POST':
-        price_rrc = request.POST.get('price_rrc')
-        product.price = price_rrc
-        product.save()
-    return redirect('shop_catalog')
+        state = request.POST.get('state')
+        shop.state = bool(state)
+        shop.save()
+        return redirect('shop_catalog')
+
+    return render(request, 'shop_catalog.html', {'shop': shop})

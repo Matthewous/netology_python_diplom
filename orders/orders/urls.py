@@ -36,8 +36,6 @@ urlpatterns = [
     
     path('register_shop/', views.register_shop, name='register_shop'),
     path('shop_catalog/', views.shop_catalog, name='shop_catalog'),
-    path('update_product_quantity/<int:product_id>/', views.update_product_quantity, name='update_product_quantity'),
-    path('update_product_price/<int:product_id>/', views.update_product_price, name='update_product_price'),
-    path('update_product_price_rrc/<int:product_id>/', views.update_product_price_rrc, name='update_product_price_rrc'),
-    # path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
+    # path('update_product/<int:product_id>/', views.update_product, name='update_product'),
+    path('shop_status/<int:shop_id>/', views.shop_status, name='shop_status'),
 ]
