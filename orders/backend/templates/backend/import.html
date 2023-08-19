@@ -9,11 +9,14 @@
       {% endfor %}
     </ul>
   {% endif %}
+  <br/> 
+  Для обновления списка продуктов загрузите YAML файл
+  <br/><br/>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <label for="yaml_file">YAML файл:</label>
+    <label for="yaml_file"></label>
     <input type="file" name="yaml_file" id="yaml_file" required>
-    <br>
+    <br/><br/>
     <button type="submit">Импортировать</button>
   </form>
 {% endblock %}

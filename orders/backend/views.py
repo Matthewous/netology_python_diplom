@@ -259,21 +259,6 @@ def shop_catalog(request):
     }
     return render(request, 'backend/shop_catalog.html', context)
 
-# def update_product(request, product_id):
-    
-#     product = get_object_or_404(ProductInfo, id=product_id)
-    
-#     if request.method == 'POST':
-#         quantity = request.POST.get('quantity')
-#         product.quantity = quantity
-#         price = request.POST.get('price')
-#         product.price = price
-#         price_rrc = request.POST.get('price_rrc')
-#         product.price = price_rrc
-#         product.save()
-    
-#     return redirect('shop_catalog')
-
 def shop_status(request, shop_id):
     shop = get_object_or_404(Shop, id=shop_id)
 
@@ -281,46 +266,10 @@ def shop_status(request, shop_id):
         state = request.POST.get('state')
         shop.state = bool(state)
         shop.save()
+        messages.success(request, 'Статус магазина изменен')
         return redirect('shop_catalog')
 
     return render(request, 'shop_catalog.html', {'shop': shop})
-
-# def import_products(request):
-
-#     if request.method == 'POST':
-#         yaml_file = request.FILES['yaml_file']
-#         try:
-#             data = yaml.safe_load(yaml_file)
-#         except yaml.YAMLError:
-#             messages.error(request, 'Ошибка чтения файла YAML')
-#             return redirect('import_products')
-
-#         shop_id = data.get('shop_id')
-#         shop = Shop.objects.get(pk=shop_id)
-#         products = data.get('products', [])
-
-#         # Очищаем все записи о продуктах конкретного магазина
-#         ProductInfo.objects.filter(shop=shop).delete()
-
-#         for product_data in products:
-#             product = Product.objects.create(
-#                 name=product_data.get('name'),
-#                 category_id=product_data.get('category_id')
-#             )
-
-#             ProductInfo.objects.create(
-#                 external_id=product_data.get('external_id'),
-#                 product=product,
-#                 shop=shop,
-#                 quantity=product_data.get('quantity'),
-#                 price=product_data.get('price'),
-#                 price_rrc=product_data.get('price_rrc')
-#             )
-
-#         messages.success(request, 'Продукты успешно импортированы')
-#         return redirect('import_products')
-
-#     return render(request, 'backend/import.html')
 
 def import_products(request):
     if request.method == 'POST':
