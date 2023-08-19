@@ -1,8 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.core.mail import send_mail
+from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 from .forms import RegisterUserForm
 
@@ -68,3 +71,31 @@ def register_user(request):
 
 
     return render(request, 'authenticate/register_user.html', {'form':form})
+
+def reset_password(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        try:
+            user = get_user_model().objects.get(username=username)
+        except User.DoesNotExist:
+            # обработка ошибки, если пользователь с таким именем не существует
+            return HttpResponse('Пользователь с таким именем не существует')
+
+        # генерация нового пароля
+        import random
+        import string
+        new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+        user.set_password(new_password)
+        user.save()
+
+        # отправка нового пароля на email пользователя
+        subject = 'Восстановление пароля'
+        message = f'Ваш новый пароль: {new_password}'
+        from_email = 'noreply@example.com'
+        to_email = user.email
+        send_mail(subject, message, from_email, [to_email])
+        messages.success(request, 'Новый пароль был отправлен на вашу почту.')
+        return redirect('login')
+    
+    else:
+        return render(request, 'authenticate/reset_password.html')
