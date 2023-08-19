@@ -2,22 +2,41 @@
 
 {% block content %}
   <h1>История заказов</h1>
+  <br/>
   {% if orders %}
     <ul>
       {% for order in orders %}
-        <li>
-          {% if order.status == 'editing' %}
-            <p>Статус заказа: {{ order.status }}</p>
-            <p>Дата создания: {{ order.created_at }}</p>
-            <a href="{% url 'cart' %}">Перейти к оформлению</a>
-          {% else %}
-            <p>Статус заказа: {{ order.status }}</p>
-            <p>Адресс доставки: {{ order.delivery_address }}</p>
-            <p>Ожидаемая дата доставки: {{ order.delivery_date }}</p>
-            <p>Дата оформления заказа: {{ order.order_date }}</p>
-            <a href="{% url 'order_detail' order.id %}">Перейти в карточку</a>
-          {% endif %}
-        </li>
+        {% if order.status == 'editing' %}
+        <div class="card">
+          <div class="card-header">
+            Заказ в корзине
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Статус заказа: {{ order.status }}</h5>
+            <p class="card-text">Дата создания: {{ order.created_at }}</p>
+            <a href="{% url 'cart' %}" class="btn btn-primary">Перейти к оформлению</a>
+          </div>
+        {% else %}
+        <div class="card">
+          <div class="card-header">
+            Заказ №: {{ order.id }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">Статус заказа: {{ order.status }}</h5>
+            <p class="card-text">Дата оформления заказа: {{ order.order_date }}</p>
+            <p class="card-text">Ожидаемая дата доставки: {{ order.delivery_date }}</p>
+            <p class="card-text">Адресс доставки: {{ order.delivery_address }}</p>
+            <p class="card-text">Дата создания: {{ order.created_at }}</p>
+            <a href="{% url 'order_detail' order.id %}" class="btn btn-primary">Перейти в карточку заказа</a>
+          </div>
+        </div>
+        <br/>
+          <!-- <p>Статус заказа: {{ order.status }}</p>
+          <p>Адресс доставки: {{ order.delivery_address }}</p>
+          <p>Ожидаемая дата доставки: {{ order.delivery_date }}</p>
+          <p>Дата оформления заказа: {{ order.order_date }}</p>
+          <a href="{% url 'order_detail' order.id %}">Перейти в карточку</a> -->
+        {% endif %}
       {% endfor %}
     </ul>
   {% else %}
