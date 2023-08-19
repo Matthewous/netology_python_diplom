@@ -81,16 +81,23 @@ def add_to_cart(request, product_info_id):
     if request.method == 'POST':
         product_info = get_object_or_404(ProductInfo, id=product_info_id)
         quantity = request.POST.get('quantity')
+        check_quantity = product_info.quantity
         
-        try:
-            order = Order.objects.get(user=request.user, status='editing')
-            order.add_product(product_info, quantity)
-        except Order.DoesNotExist:
-            order = Order.objects.create(user=request.user, status='editing')
-            order.add_product(product_info, quantity)
+        if check_quantity>=int(quantity):
 
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    
+            try:
+                order = Order.objects.get(user=request.user, status='editing')
+                order.add_product(product_info, quantity)
+            except Order.DoesNotExist:
+                order = Order.objects.create(user=request.user, status='editing')
+                order.add_product(product_info, quantity)
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        
+        else:
+            messages.error(request, f'Вы выбрали недопустимое количество товара {product_info.product}. Укажите меньшее количество')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
 def orders(request):
     user = request.user
     orders = Order.objects.filter(user=user)
