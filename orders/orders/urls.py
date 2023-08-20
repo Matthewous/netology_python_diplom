@@ -24,7 +24,6 @@ urlpatterns = [
     path('members/', include('django.contrib.auth.urls')),
     path('members/', include('members.urls')),
     path('products/', views.products_list, name='products_list'),
-    path('categories', views.all_categories, name='categories'),
     path('product/<int:product_id>/', views.product_detail, name='product_detail'),
     path('product_detail/<int:product_info_id>/add_to_cart/', views.add_to_cart, name='add_to_cart'),
     path('orders/', views.orders, name='orders'),
@@ -33,10 +32,8 @@ urlpatterns = [
     path('thank_you_page', views.thank_you_page, name='thank_you_page'),
     path('cart/delete/<int:item_id>/', views.delete_order_item, name='delete_order_item'),
     path('update_order_item/<int:item_id>/', views.update_order_item, name='update_order_item'),
-    
     path('register_shop/', views.register_shop, name='register_shop'),
     path('shop_catalog/', views.shop_catalog, name='shop_catalog'),
-    # path('update_product/<int:product_id>/', views.update_product, name='update_product'),
     path('shop_status/<int:shop_id>/', views.shop_status, name='shop_status'),
     path('import/', views.import_products, name='import_products'),
     path('export_orders/<int:shop_id>/', views.export_orders, name='export_orders'),
